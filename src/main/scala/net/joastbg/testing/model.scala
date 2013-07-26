@@ -15,12 +15,12 @@ import me.prettyprint.hector.api.Keyspace
 
 trait CassandraModel[K <: Object] {
     implicit def entityManager(implicit ks: Keyspace) = new EntityManagerImpl(ks, "net.joastbg.testing")
-    def save()(implicit em: EntityManagerImpl) { em.persist(this) }
+    def save()(implicit em: EntityManagerImpl) { em.persist(this) }    
 }
 
 trait CassandraMeta[K <: Object, V <: CassandraModel[K]] {
     def freshInstance: V
-    def find[V](k: K)(implicit em: EntityManagerImpl) = Option(em.find(freshInstance.getClass, k))
+    def find[V](k: K)(implicit em: EntityManagerImpl) = Option(em.find(freshInstance.getClass, k))   
 }
 
 /// Address

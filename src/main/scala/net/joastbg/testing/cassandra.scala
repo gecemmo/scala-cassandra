@@ -87,13 +87,26 @@ class CassandraWrapper {
 			res.getColumnNames.map(f => f -> res.getString(f)).toMap
 		case _ => Map()
 	}
+	
+	def dumpColumnFamily() {
+		val se = StringSerializer.get()		
+				
+		val rsq = HFactory.createRangeSlicesQuery(keyspace, se, se, se)
+		rsq.setColumnFamily("tenants")
+		rsq.setKeys("", "")
+		rsq.setReturnKeysOnly()
+		rsq.setRowCount(5)
+		val result = rsq.execute()
+		
+		println(result)
+		println(result.get())
+	}
 }
 
-object TestApplication extends CassandraWrapper {
+object CassandraWrapper extends CassandraWrapper {
 
-	def main(args: Array[String]) {
-		
-		// TODO: Make this nicer
+	def test() {
+	  // TODO: Make this nicer
 		implicit def entityManager(implicit ks: Keyspace) = new EntityManagerImpl(ks, "net.joastbg.testing")
 		implicit def em: EntityManagerImpl = entityManager(keyspace)
 
@@ -102,12 +115,22 @@ object TestApplication extends CassandraWrapper {
 		val phoneNr = new PhoneNumber
 		phoneNr.kind = "home"
 		phoneNr.number = "212 555-1234"
-
+			  
 		phoneNr.save()
 
 		PhoneNumber.find(phoneNr.id) match {
 			case Some(nr) => println("Found number: " + nr.number)
 			case _ => println("Nothing found")
 		}
+	}
+  
+	def main(args: Array[String]) {
+		
+		println(loadKVs("198410224151"))
+		println(loadKVs("198410224160"))
+	  
+		//saveKVs("198410224160", Map("firstname" -> "Nisse", "lastname" -> "Andersson"))
+	  
+		dumpColumnFamily()
 	}
 }
